@@ -37,7 +37,7 @@ smarparking/                   # Spring Boot backend (Maven)
 
 ## Prerequisites
 
-- Java 17+ (or the version required by `smarparking/pom.xml`)
+- Java 21
 - Node.js 16+ (for the frontend)
 - MySQL Server (or local XAMPP/WAMP)
 
