@@ -126,10 +126,7 @@ public class AdminController {
         }
         return ResponseEntity.ok(result);
     }
-
-    @Autowired
-    private com.sdaproject.smarparking.service.SalesObserver salesObserver;
-
+    
     // HTTP GET: http://localhost:8080/api/admin/sales
     @GetMapping("/sales")
     public ResponseEntity<String> getDailySales() {
