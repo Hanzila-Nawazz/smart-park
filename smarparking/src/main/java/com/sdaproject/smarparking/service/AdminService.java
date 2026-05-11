@@ -28,8 +28,7 @@ public class AdminService {
     @Autowired
     private ParkingRecordRepository recordRepository;
 
-    @Autowired
-    private SalesObserver salesObserver;
+
 
     @Autowired
     private ReportService reportService;
