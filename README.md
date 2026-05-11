@@ -16,6 +16,45 @@ Smart Park is a full-stack smart parking solution combining a Spring Boot backen
 - Reporting: daily revenue and occupancy logs exported from the backend.
 - Seeded SQL and a ready-to-run Spring Boot app for local development.
 
+## Demo UI Snapshots 
+
+-Landing Page
+<img width="1892" height="896" alt="landing page" src="https://github.com/user-attachments/assets/d4b4342f-ff8f-4681-b643-7607b7565aa6" />
+
+-Admin Dashboard
+<img width="1917" height="901" alt="admin dashboard" src="https://github.com/user-attachments/assets/2ce83239-0342-4a72-a2dd-f29dd7913111" />
+
+-Site Management
+<img width="1887" height="902" alt="Screenshot 2026-05-09 175414" src="https://github.com/user-attachments/assets/5ffd7598-38c7-44d6-8900-bb7b812351a3" />
+
+-Sitewise Eagle View
+<img width="1895" height="905" alt="Screenshot 2026-05-09 175537" src="https://github.com/user-attachments/assets/0498416d-2c5a-4404-a3e5-0b0552997cd4" />
+
+-Revenue Reporting 
+<img width="1896" height="910" alt="Screenshot 2026-05-09 175626" src="https://github.com/user-attachments/assets/7ec5c149-0f00-47b1-a044-d4f53a7ebe7e" />
+
+-Analytics 
+<img width="1913" height="826" alt="Screenshot 2026-05-09 175651" src="https://github.com/user-attachments/assets/d8eee9c5-01be-46a6-86a6-638920b7413f" />
+
+-Registered User Dashboard
+<img width="1889" height="907" alt="Screenshot 2026-05-09 175838" src="https://github.com/user-attachments/assets/229c1876-b42e-49f1-a98c-1b33b2cf05d4" />
+
+-Live Active View Session for vehicle tracking
+<img width="1910" height="891" alt="Screenshot 2026-05-09 175914" src="https://github.com/user-attachments/assets/8a483d5e-1625-4105-ac8e-2731fcca988a" />
+
+-Pakring Record Tracking 
+<img width="1899" height="900" alt="Screenshot 2026-05-09 175949" src="https://github.com/user-attachments/assets/09278b85-673c-4135-9938-bbf6d8373ff2" />
+
+-Billing for pending dues and previously paid session
+<img width="1919" height="910" alt="Screenshot 2026-05-09 180016" src="https://github.com/user-attachments/assets/7ba49d2d-d8d6-4069-b3b3-c86d7422beae" />
+
+-Walk In user slot booking & Reciept Generation
+<img width="1674" height="843" alt="Screenshot 2026-05-09 180119" src="https://github.com/user-attachments/assets/fef5862d-b44d-407c-8e81-892914807b25" />
+
+-Seamless Check out for walk in users
+<img width="1888" height="896" alt="Screenshot 2026-05-09 180224" src="https://github.com/user-attachments/assets/b7fa4175-3ac5-45d1-90c3-549a71e781aa" />
+
+
 ## Tech Stack
 
 - Backend: Java + Spring Boot (Maven)
@@ -37,7 +76,7 @@ smarparking/                   # Spring Boot backend (Maven)
 
 ## Prerequisites
 
-- Java 17+ (or the version required by `smarparking/pom.xml`)
+- Java 21
 - Node.js 16+ (for the frontend)
 - MySQL Server (or local XAMPP/WAMP)
 
