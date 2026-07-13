@@ -8,7 +8,12 @@ import { nitro } from "nitro/vite"; // <-- Added Nitro
 export default defineConfig({
   plugins: [
     tanstackStart(),
-    nitro({ preset: 'vercel' }), // <-- Explicit Vercel preset
+    nitro({ 
+      preset: 'vercel',
+      routeRules: {
+        '/api/**': { proxy: 'http://80.225.229.45/api/**' }
+      }
+    }),
     react(),
     tailwindcss(),
     tsConfigPaths(),
