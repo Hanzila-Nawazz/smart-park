@@ -164,6 +164,7 @@
     color: var(--color-foreground);
     font-feature-settings: "cv11", "ss01";
     -webkit-font-smoothing: antialiased;
+    zoom: 90%;
   }
   h1, h2, h3, h4 { letter-spacing: -0.02em; }
 }
