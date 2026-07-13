@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://smart-park-dashboard-main.vercel.app/</loc>
+    <loc>https://app.parkwise.systems/</loc>
     <lastmod>2026-07-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://smart-park-dashboard-main.vercel.app/walkin</loc>
+    <loc>https://app.parkwise.systems/walkin</loc>
     <lastmod>2026-07-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://smart-park-dashboard-main.vercel.app/user/login</loc>
+    <loc>https://app.parkwise.systems/user/login</loc>
     <lastmod>2026-07-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://smart-park-dashboard-main.vercel.app/user/signup</loc>
+    <loc>https://app.parkwise.systems/user/signup</loc>
     <lastmod>2026-07-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://smart-park-dashboard-main.vercel.app/admin/login</loc>
+    <loc>https://app.parkwise.systems/admin/login</loc>
     <lastmod>2026-07-13</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
