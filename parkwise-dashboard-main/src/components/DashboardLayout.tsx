@@ -3,9 +3,9 @@ import { motion } from "framer-motion";
 import {
   LayoutDashboard, MapPin, Clock, History, Receipt, Wallet,
   Plus, Settings, LogOut, Building2, Search, Users, BarChart3,
-  PieChart, Car, Menu, X, Moon, Sun, Bell,
+  PieChart, Car, Menu, X, Moon, Sun, Bell, MessageSquareWarning, MessageSquare
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { useAuthStore, useThemeStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -20,11 +20,13 @@ const userNav: NavItem[] = [
   { to: "/user/bills", label: "Bills", icon: Receipt },
   { to: "/user/wallet", label: "Wallet", icon: Wallet },
   { to: "/user/topup", label: "Top Up", icon: Plus },
+  { to: "/user/complaints", label: "Complaints", icon: MessageSquare },
   { to: "/user/settings", label: "Settings", icon: Settings },
 ];
 
 const adminNav: NavItem[] = [
   { to: "/admin/dashboard", label: "Overview", icon: LayoutDashboard },
+  { to: "/admin/requests", label: "Vehicle Requests", icon: Car },
   { to: "/admin/sites", label: "Manage Sites", icon: Building2 },
   { to: "/admin/site-details", label: "Site Details", icon: MapPin },
   { to: "/admin/records", label: "Parking Records", icon: History },
@@ -32,6 +34,7 @@ const adminNav: NavItem[] = [
   { to: "/admin/users", label: "Registered Users", icon: Users },
   { to: "/admin/revenue", label: "Revenue Reports", icon: BarChart3 },
   { to: "/admin/analytics", label: "Analytics", icon: PieChart },
+  { to: "/admin/complaints", label: "Complaints", icon: MessageSquareWarning },
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
@@ -43,9 +46,63 @@ export function DashboardLayout({ children, role }: { children: ReactNode; role:
   const { theme, toggle } = useThemeStore();
   const [open, setOpen] = useState(false);
 
+  // Auto-logout & Auth Guards
+  
+  useEffect(() => {
+    // 1. Route Protection: Kick out unauthenticated users or wrong roles
+    if (!user) {
+      window.location.replace(role === "admin" ? "/admin/login" : "/user/login");
+      return;
+    } else if (user.role?.toLowerCase() !== role.toLowerCase()) {
+      window.location.replace(`/${user.role.toLowerCase()}/dashboard`);
+      return;
+    }
+
+    // 2. Inactivity Timeout: 10 minutes (600,000 ms)
+    let timeoutId: NodeJS.Timeout;
+
+    const resetTimer = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        handleLogout();
+      }, 10 * 60 * 1000);
+    };
+
+    // Attach listeners
+    window.addEventListener("mousemove", resetTimer);
+    window.addEventListener("keydown", resetTimer);
+    window.addEventListener("scroll", resetTimer);
+    window.addEventListener("click", resetTimer);
+    
+    // Start initial timer
+    resetTimer();
+
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener("mousemove", resetTimer);
+      window.removeEventListener("keydown", resetTimer);
+      window.removeEventListener("scroll", resetTimer);
+      window.removeEventListener("click", resetTimer);
+    };
+  }, [user, role]);
+
   const handleLogout = () => {
-    logout();
-    navigate({ to: "/" });
+    // 1. Clear the Zustand store (which also clears localStorage and sessionStorage internally)
+    logout(); 
+    
+    // 2. Double-check by explicitly removing auth tokens
+    localStorage.removeItem("spms-auth"); 
+    sessionStorage.removeItem("spms-auth");
+    
+    // 3. Clear any API headers by accessing the store one more time
+    // This ensures the API interceptor won't have any stale tokens
+    if (typeof window !== "undefined") {
+      window.sessionStorage.clear();
+    }
+    
+    // 4. Force a hard refresh by navigating to home with a fresh page load
+    // This ensures all JavaScript state is wiped and the browser resets
+    window.location.href = "/"; 
   };
 
   return (
@@ -53,7 +110,7 @@ export function DashboardLayout({ children, role }: { children: ReactNode; role:
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed lg:static inset-y-0 left-0 z-40 w-64 bg-sidebar border-r border-sidebar-border transition-transform lg:translate-x-0",
+          "fixed lg:sticky lg:top-0 lg:h-screen inset-y-0 left-0 z-40 w-64 bg-sidebar border-r border-sidebar-border transition-transform lg:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full",
         )}
       >

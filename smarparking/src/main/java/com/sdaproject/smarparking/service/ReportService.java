@@ -5,19 +5,16 @@ import com.sdaproject.smarparking.models.ParkingSite;
 import com.sdaproject.smarparking.repository.ParkingRecordRepository;
 import com.sdaproject.smarparking.repository.ParkingSiteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ReportService {
@@ -28,27 +25,35 @@ public class ReportService {
     @Autowired
     private ParkingSiteRepository siteRepository;
 
+    @Cacheable(value = "revenueReport", unless = "#result == null")
     public Map<String, Object> getRevenueReport() {
-        List<ParkingRecord> allRecords = recordRepository.findAll();
-        List<ParkingRecord> paidRecords = allRecords.stream()
+        // 1. FAST DB COUNTS (All-Time Stats, Zero Memory Cost)
+        long recordCount = recordRepository.count();
+        Double totalRevOpt = recordRepository.calculateTotalRevenue();
+        double totalRevenue = totalRevOpt != null ? totalRevOpt : 0.0;
+        
+        // 2. FETCH ONLY LAST 30 DAYS OF DATA FOR CHARTS (Prevents Memory Timeout)
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+        List<ParkingRecord> recentRecords = recordRepository.findRecordsSince(thirtyDaysAgo);
+        
+        List<ParkingRecord> paidRecords = recentRecords.stream()
                 .filter(ParkingRecord::isPaid)
                 .filter(record -> record.getAmount() != null && record.getAmount() > 0)
                 .toList();
 
-        double totalRevenue = paidRecords.stream()
-                .mapToDouble(record -> record.getAmount() == null ? 0.0 : record.getAmount()).sum();
-        long paidSessions = paidRecords.size();
-        long unpaidSessions = allRecords.stream().filter(record -> !record.isPaid()).count();
+        // 3. Process the smaller, recent dataset
+        long paidSessions = paidRecords.size(); 
+        long unpaidSessions = recentRecords.stream().filter(record -> !record.isPaid()).count();
 
         List<Map<String, Object>> byDay = buildDailyRevenue(paidRecords);
         List<Map<String, Object>> bySite = buildSiteRevenue(paidRecords);
         List<Map<String, Object>> monthlyTrend = buildMonthlyRevenue(paidRecords);
 
         Map<String, Object> summary = new LinkedHashMap<>();
-        summary.put("totalRevenue", totalRevenue);
+        summary.put("totalRevenue", Math.round(totalRevenue * 100.0) / 100.0);
         summary.put("paidSessions", paidSessions);
         summary.put("unpaidSessions", unpaidSessions);
-        summary.put("recordCount", allRecords.size());
+        summary.put("recordCount", recordCount); 
         summary.put("topSite", bySite.isEmpty() ? "N/A" : String.valueOf(bySite.get(0).get("name")));
 
         Map<String, Object> response = new HashMap<>();
@@ -59,8 +64,12 @@ public class ReportService {
         return response;
     }
 
+    @Cacheable(value = "occupancyReport", unless = "#result == null")
     public List<Map<String, Object>> getOccupancyReport() {
-        List<ParkingRecord> records = recordRepository.findAll();
+        // Fetch ONLY the last 24 hours of data for the hourly chart
+        LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
+        List<ParkingRecord> records = recordRepository.findRecordsSince(yesterday);
+        
         Map<Integer, Long> hourlyCounts = new HashMap<>();
         for (int hour = 0; hour < 24; hour++) {
             hourlyCounts.put(hour, 0L);
@@ -83,6 +92,7 @@ public class ReportService {
         return output;
     }
 
+    @Cacheable(value = "siteUtilization", unless = "#result == null")
     public List<Map<String, Object>> getSiteUtilizationReport() {
         List<ParkingSite> sites = siteRepository.findAll();
         List<Map<String, Object>> output = new ArrayList<>();
@@ -103,6 +113,15 @@ public class ReportService {
 
         return output;
     }
+
+    // Clear cache every 5 minutes to keep data relatively fresh (5 * 60 * 1000 ms)
+    @CacheEvict(allEntries = true, cacheNames = {"revenueReport", "occupancyReport", "siteUtilization"})
+    @Scheduled(fixedRate = 300000)
+    public void clearReportCache() {
+        // Cache will be refreshed on next request
+    }
+
+    // --- HELPER METHODS ---
 
     private List<Map<String, Object>> buildDailyRevenue(List<ParkingRecord> records) {
         Map<LocalDate, Double> totals = new HashMap<>();

@@ -16,14 +16,38 @@ const radialColors = [
   "oklch(0.62 0.2 305)",
 ];
 
+const analyticsCache = {
+  data: null as any[] | null,
+  siteUtilization: null as any[] | null,
+  isDataLoaded: false,
+  isSiteUtilizationLoaded: false,
+};
+
 function Analytics() {
-  const [data, setData] = useState<any[] | null>(null);
-  const [siteUtilization, setSiteUtilization] = useState<any[] | null>(null);
+  const [data, setData] = useState<any[] | null>(analyticsCache.isDataLoaded ? analyticsCache.data : null);
+  const [siteUtilization, setSiteUtilization] = useState<any[] | null>(analyticsCache.isSiteUtilizationLoaded ? analyticsCache.siteUtilization : null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    reportService.getOccupancy().then((d) => setData(d)).catch((e) => setError(e?.message || String(e)));
-    reportService.getSiteUtilization().then((d) => setSiteUtilization(d)).catch((e) => setError(e?.message || String(e)));
+    if (!analyticsCache.isDataLoaded) {
+      reportService.getOccupancy()
+        .then((d) => {
+          analyticsCache.data = d;
+          analyticsCache.isDataLoaded = true;
+          setData(d);
+        })
+        .catch((e) => setError(e?.message || String(e)));
+    }
+
+    if (!analyticsCache.isSiteUtilizationLoaded) {
+      reportService.getSiteUtilization()
+        .then((d) => {
+          analyticsCache.siteUtilization = d;
+          analyticsCache.isSiteUtilizationLoaded = true;
+          setSiteUtilization(d);
+        })
+        .catch((e) => setError(e?.message || String(e)));
+    }
   }, []);
 
   return (

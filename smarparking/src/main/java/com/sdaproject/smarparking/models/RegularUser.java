@@ -11,6 +11,9 @@ public class RegularUser extends user
     private String cnic;
     private String password;
     private double walletBalance = 0.0;
+    
+    // NEW FIELD
+    private boolean isSuspended = false;
 
     public RegularUser() {}
 
@@ -23,8 +26,13 @@ public class RegularUser extends user
     // Getters and Setters
     public String getCnic() { return cnic; }
     public void setCnic(String cnic) { this.cnic = cnic; }
+    
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+    
     public double getWalletBalance() { return walletBalance; }
     public void setWalletBalance(double walletBalance) { this.walletBalance = walletBalance; }
+    
+    public boolean isSuspended() { return isSuspended; }
+    public void setSuspended(boolean isSuspended) { this.isSuspended = isSuspended; }
 }

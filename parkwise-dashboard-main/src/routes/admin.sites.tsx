@@ -92,37 +92,39 @@ function ManageSites() {
       } />
 
       <div className="bg-card border border-border rounded-2xl shadow-soft overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow><TableHead>ID</TableHead><TableHead>Name</TableHead><TableHead>Location</TableHead>
-              <TableHead>Slots</TableHead><TableHead>Rate/hr</TableHead><TableHead>Status</TableHead><TableHead></TableHead></TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableRow><TableCell colSpan={7} className="text-center p-6">Loading...</TableCell></TableRow>
-            ) : sites.map((s) => (
-              <TableRow key={s.id}>
-                <TableCell className="font-mono text-xs">{s.id}</TableCell>
-                <TableCell className="font-medium">{s.name}</TableCell>
-                <TableCell>{s.location}</TableCell>
-                <TableCell>{s.totalSlots}</TableCell>
-                <TableCell>Rs {s.hourlyRate}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Switch checked={s.status === "Active"} onCheckedChange={() => toggle(s.id)} />
-                    <Badge className={s.status === "Active" ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"}>{s.status}</Badge>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-1">
-                    <Button size="icon" variant="ghost" onClick={() => openEdit(s)}><Edit className="h-4 w-4" /></Button>
-                    <Button size="icon" variant="ghost" onClick={() => remove(s.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow><TableHead>ID</TableHead><TableHead>Name</TableHead><TableHead>Location</TableHead>
+                <TableHead>Slots</TableHead><TableHead>Rate/hr</TableHead><TableHead>Status</TableHead><TableHead></TableHead></TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow><TableCell colSpan={7} className="text-center p-6">Loading...</TableCell></TableRow>
+              ) : sites.map((s) => (
+                <TableRow key={s.id}>
+                  <TableCell className="font-mono text-xs">{s.id}</TableCell>
+                  <TableCell className="font-medium">{s.name}</TableCell>
+                  <TableCell>{s.location}</TableCell>
+                  <TableCell>{s.totalSlots}</TableCell>
+                  <TableCell>Rs {s.hourlyRate}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Switch checked={s.status === "Active"} onCheckedChange={() => toggle(s.id)} />
+                      <Badge className={s.status === "Active" ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"}>{s.status}</Badge>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-1">
+                      <Button size="icon" variant="ghost" onClick={() => openEdit(s)}><Edit className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" onClick={() => remove(s.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>

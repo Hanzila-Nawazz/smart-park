@@ -43,7 +43,8 @@ function ActiveSession() {
   if (error) return <p className="text-destructive">{error}</p>;
   if (!session) return <p className="text-muted-foreground">No active session found.</p>;
 
-  const start = new Date(session.checkIn).getTime();
+  const checkInTime = session.checkIn.endsWith("Z") ? session.checkIn : session.checkIn + "Z";
+  const start = new Date(checkInTime).getTime();
   const elapsed = Math.max(0, now - start);
   const hours = Math.floor(elapsed / 3_600_000);
   const minutes = Math.floor((elapsed % 3_600_000) / 60_000);

@@ -6,5 +6,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ParkingSiteRepository extends JpaRepository<ParkingSite, String> {
-    // Basic CRUD (Create, Read, Update, Delete) methods are already built-in!
+    // Basic CRUD methods are built-in
+    
+    // --- NEW: Fast database count ---
+    long countByIsOperational(boolean isOperational);
 }

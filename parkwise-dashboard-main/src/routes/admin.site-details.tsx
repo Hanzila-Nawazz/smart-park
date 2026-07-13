@@ -73,7 +73,7 @@ function SiteDetails() {
           <SelectContent>
             {sites.map((s) => (
               <SelectItem key={s.siteId || s.id} value={s.siteId || s.id}>
-                {s.location || s.name || s.siteId}
+                {s.siteLocation || s.location || s.name || s.siteId}
               </SelectItem>
             ))}
           </SelectContent>

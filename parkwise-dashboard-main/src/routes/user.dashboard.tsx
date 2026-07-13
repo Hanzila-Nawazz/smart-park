@@ -16,13 +16,13 @@ function UserDashboard() {
   // Only pulling the 'user' object from the store, NOT the dummy wallet balance!
   const { user } = useAuthStore(); 
   
-  // State to hold our real Java backend data
   const [stats, setStats] = useState({
     walletBalance: 0,
     activeCount: 0,
     activeText: "No active session",
     totalSessions: 0,
     pendingBills: 0,
+    isSuspended: false,
     chartData: null as any[] | null
   });
   
@@ -49,6 +49,16 @@ function UserDashboard() {
         title={`Hello, ${user?.name?.split(" ")[0] ?? "there"} 👋`} 
         description="Here's a snapshot of your parking activity." 
       />
+
+      {!loading && stats.isSuspended && (
+        <div className="bg-destructive/10 border-l-4 border-destructive p-4 rounded-lg flex items-center justify-between shadow-soft">
+          <div>
+            <h3 className="font-bold text-destructive text-lg">Account Suspended</h3>
+            <p className="text-destructive/80 text-sm">Your account has been suspended due to overdue bills. You cannot book new parking slots until your dues are cleared.</p>
+          </div>
+          <Wallet className="h-8 w-8 text-destructive opacity-50" />
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Real dynamic stats from Java Database! */}

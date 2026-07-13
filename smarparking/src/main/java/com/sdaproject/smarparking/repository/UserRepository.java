@@ -12,8 +12,8 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<user, Long> {    
     
-    // Finds any vehicle (Walk-in or Regular)
-    Optional<user> findByVehicleNo(String vehicleNo);
+    // Finds any vehicle (Walk-in or Regular) safely, avoiding NonUniqueResultException
+    Optional<user> findFirstByVehicleNoOrderByIdDesc(String vehicleNo);
 
     // Custom query: Explicitly searches the RegularUser subclass for the CNIC
     @Query("SELECT u FROM RegularUser u WHERE u.cnic = :cnic")

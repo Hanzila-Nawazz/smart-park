@@ -33,7 +33,8 @@ public class ParkingController {
         Integer slotNumber = null;
         if (slotIdStr != null && slotIdStr.contains("_")) {
             try {
-                slotNumber = Integer.parseInt(slotIdStr.split("_")[1]);
+                int lastUnderscore = slotIdStr.lastIndexOf("_");
+                slotNumber = Integer.parseInt(slotIdStr.substring(lastUnderscore + 1));
             } catch (NumberFormatException e) {
                 return ResponseEntity.badRequest().body("Error: Invalid slot format.");
             }

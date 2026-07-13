@@ -1,6 +1,8 @@
 package com.sdaproject.smarparking.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 
 @Entity
@@ -13,15 +15,18 @@ public class ParkingRecord {
 
     private LocalDateTime parkInTime;
     private LocalDateTime parkOutTime;
+
+    // Fix: Explicitly map the boolean to an Integer column (1/0)
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
+    @Column(name = "is_paid")
     private boolean isPaid = false;
+
     private String paymentMethod = "Unpaid";
     private Double amount = 0.0;
 
-    // ---> NEW: Dedicated License Plate Column <---
     @Column(name = "license_plate")
     private String licensePlate;
 
-    // ---> NEW: Slot Number to track which specific slot is booked <---
     @Column(name = "slot_number")
     private Integer slotNumber;
 
@@ -87,7 +92,6 @@ public class ParkingRecord {
         this.amount = amount;
     }
 
-    // ---> NEW Getters & Setters for License Plate <---
     public String getLicensePlate() {
         return licensePlate;
     }
@@ -112,7 +116,6 @@ public class ParkingRecord {
         this.user = user;
     }
 
-    // ---> Slot Number Getters & Setters <---
     public Integer getSlotNumber() {
         return slotNumber;
     }

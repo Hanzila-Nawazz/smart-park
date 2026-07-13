@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/lib/store";
 import { parkingService } from "@/services/parkingService";
+import { userService } from "@/services/userService";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/user/book")({
@@ -29,7 +30,9 @@ function BookSlot() {
   const [isBooking, setIsBooking] = useState(false);
   const { user } = useAuthStore();
 
-  // Fetch sites safely
+  const [isSuspended, setIsSuspended] = useState(false);
+
+  // Fetch sites and suspension status safely
   useEffect(() => {
     parkingService.getSites().then((data) => {
       setSites(data || []);
@@ -37,7 +40,13 @@ function BookSlot() {
         setSiteId(String(data[0].siteId || data[0].id));
       }
     }).catch(() => { });
-  }, []);
+
+    if (user?.id) {
+      userService.getDashboardStats(user.id).then(stats => {
+        if (stats.isSuspended) setIsSuspended(true);
+      }).catch(() => {});
+    }
+  }, [user]);
 
   // Fetch virtual slots map
   useEffect(() => {
@@ -78,7 +87,17 @@ function BookSlot() {
       parkingService.getSlots(siteId).then(setSlots);
 
     } catch (err: any) {
-      toast.error(err.response?.data || "Booking failed. Please verify your vehicle plate.");
+      let errorMessage = "Booking failed. Please verify your vehicle plate.";
+      if (err.response?.data) {
+        if (typeof err.response.data === 'string') {
+          errorMessage = err.response.data;
+        } else if (err.response.data.message) {
+          errorMessage = err.response.data.message;
+        } else if (err.response.data.error) {
+          errorMessage = err.response.data.error;
+        }
+      }
+      toast.error(errorMessage);
     } finally {
       setIsBooking(false);
     }
@@ -113,7 +132,14 @@ function BookSlot() {
         </div>
       </div>
 
-      {loading ? <LoadingSpinner /> : (
+      {isSuspended ? (
+        <div className="bg-destructive/10 border-l-4 border-destructive p-6 rounded-lg flex items-center justify-between shadow-soft mt-8">
+          <div>
+            <h3 className="font-bold text-destructive text-xl">Booking Suspended</h3>
+            <p className="text-destructive/80 mt-2">Your account has been suspended due to overdue bills. You cannot book new parking slots until your dues are cleared.</p>
+          </div>
+        </div>
+      ) : loading ? <LoadingSpinner /> : (
         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
           {slots.map((slot) => {
             const isSelected = selected?.id === slot.id;
@@ -140,12 +166,12 @@ function BookSlot() {
 
       {selected && (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-card border border-border rounded-2xl shadow-card px-6 py-4 flex items-center gap-4 z-30">
+          className="fixed bottom-6 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 bg-card border border-border rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.3)] px-6 py-4 flex items-center justify-between gap-4 z-[100]">
           <div>
             <p className="text-xs text-muted-foreground">Selected</p>
             <p className="font-semibold">Slot {selected.number} · {selected.vehicleType || "Vehicle"}</p>
           </div>
-          <Button onClick={() => setOpen(true)} className="gradient-primary text-white border-0">Book Slot</Button>
+          <Button onClick={() => setOpen(true)} className="gradient-primary text-white border-0 shadow-glow shrink-0">Book Slot</Button>
         </motion.div>
       )}
 

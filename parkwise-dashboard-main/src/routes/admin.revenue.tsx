@@ -14,9 +14,16 @@ export const Route = createFileRoute("/admin/revenue")({
 
 const COLORS = ["oklch(0.62 0.17 245)", "oklch(0.72 0.18 145)", "oklch(0.72 0.18 55)", "oklch(0.62 0.2 305)"];
 
+const revenueCache = {
+  revenue: null as any | null,
+  occupancy: null as any[] | null,
+  isRevenueLoaded: false,
+  isOccupancyLoaded: false,
+};
+
 function Revenue() {
-  const [revenue, setRevenue] = useState<any | null>(null);
-  const [occupancy, setOccupancy] = useState<any[] | null>(null);
+  const [revenue, setRevenue] = useState<any | null>(revenueCache.isRevenueLoaded ? revenueCache.revenue : null);
+  const [occupancy, setOccupancy] = useState<any[] | null>(revenueCache.isOccupancyLoaded ? revenueCache.occupancy : null);
   const [error, setError] = useState<string | null>(null);
 
   const downloadFile = (blob: Blob, filename: string) => {
@@ -29,8 +36,25 @@ function Revenue() {
   };
 
   useEffect(() => {
-    reportService.getRevenue().then(setRevenue).catch((e) => setError(e?.message || String(e)));
-    reportService.getOccupancy().then(setOccupancy).catch((e) => setError(e?.message || String(e)));
+    if (!revenueCache.isRevenueLoaded) {
+      reportService.getRevenue()
+        .then((data) => {
+          revenueCache.revenue = data;
+          revenueCache.isRevenueLoaded = true;
+          setRevenue(data);
+        })
+        .catch((e) => setError(e?.message || String(e)));
+    }
+
+    if (!revenueCache.isOccupancyLoaded) {
+      reportService.getOccupancy()
+        .then((data) => {
+          revenueCache.occupancy = data;
+          revenueCache.isOccupancyLoaded = true;
+          setOccupancy(data);
+        })
+        .catch((e) => setError(e?.message || String(e)));
+    }
   }, []);
   return (
     <div className="space-y-6">

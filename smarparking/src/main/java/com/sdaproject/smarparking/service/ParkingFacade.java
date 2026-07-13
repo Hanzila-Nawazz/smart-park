@@ -133,11 +133,17 @@ public class ParkingFacade {
     // Feature: Check-In
     public synchronized String parkVehicle(String vehicleNo, String siteId, Integer slotNumber) {
 
-        Optional<user> userOpt = userRepository.findByVehicleNo(vehicleNo);
+        Optional<user> userOpt = userRepository.findFirstByVehicleNoOrderByIdDesc(vehicleNo);
         Optional<ParkingSite> siteOpt = siteRepository.findById(siteId);
 
         if (userOpt.isEmpty())
             return "Error: User not found.";
+            
+        user u = userOpt.get();
+        if (u instanceof RegularUser && ((RegularUser) u).isSuspended()) {
+            return "Error: Your account is suspended due to unpaid dues. Please clear your dues first.";
+        }
+            
         if (siteOpt.isEmpty())
             return "Error: Parking site not found.";
 
@@ -159,12 +165,7 @@ public class ParkingFacade {
             }
 
             // Check if slot is already occupied
-            List<ParkingRecord> slotOccupied = recordRepository.findAll().stream()
-                    .filter(r -> r.getParkingSite().getSiteId().equals(siteId)
-                            && r.getSlotNumber() != null
-                            && r.getSlotNumber().equals(slotNumber)
-                            && r.getParkOutTime() == null)
-                    .toList();
+            List<ParkingRecord> slotOccupied = recordRepository.findByParkingSite_SiteIdAndSlotNumberAndParkOutTimeIsNull(siteId, slotNumber);
 
             if (!slotOccupied.isEmpty()) {
                 return "Error: Selected slot is already occupied.";
@@ -184,7 +185,7 @@ public class ParkingFacade {
     // Feature: Check-Out & Billing
     public String checkoutVehicle(String vehicleNo, String paymentType) {
 
-        Optional<user> userOpt = userRepository.findByVehicleNo(vehicleNo);
+        Optional<user> userOpt = userRepository.findFirstByVehicleNoOrderByIdDesc(vehicleNo);
         if (userOpt.isEmpty())
             return "Error: User not found.";
 

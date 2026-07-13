@@ -55,4 +55,8 @@ export const parkingService = {
     try { return (await api.post("/walkin/checkout", { plate })).data; }
     catch (err) { throw err; }
   },
+  checkWalkinRegistered: async (plate: string) => {
+    try { return (await api.get(`/walkin/is-registered/${plate}`)).data; }
+    catch (err) { throw err; }
+  }
 };

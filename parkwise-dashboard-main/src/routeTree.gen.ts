@@ -18,6 +18,7 @@ import { Route as UserSettingsRouteImport } from './routes/user.settings'
 import { Route as UserLoginRouteImport } from './routes/user.login'
 import { Route as UserHistoryRouteImport } from './routes/user.history'
 import { Route as UserDashboardRouteImport } from './routes/user.dashboard'
+import { Route as UserComplaintsRouteImport } from './routes/user.complaints'
 import { Route as UserBookRouteImport } from './routes/user.book'
 import { Route as UserBillsRouteImport } from './routes/user.bills'
 import { Route as UserActiveRouteImport } from './routes/user.active'
@@ -27,9 +28,11 @@ import { Route as AdminSiteDetailsRouteImport } from './routes/admin.site-detail
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSearchRouteImport } from './routes/admin.search'
 import { Route as AdminRevenueRouteImport } from './routes/admin.revenue'
+import { Route as AdminRequestsRouteImport } from './routes/admin.requests'
 import { Route as AdminRecordsRouteImport } from './routes/admin.records'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
+import { Route as AdminComplaintsRouteImport } from './routes/admin.complaints'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 
 const WalkinRoute = WalkinRouteImport.update({
@@ -77,6 +80,11 @@ const UserDashboardRoute = UserDashboardRouteImport.update({
   path: '/user/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UserComplaintsRoute = UserComplaintsRouteImport.update({
+  id: '/user/complaints',
+  path: '/user/complaints',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UserBookRoute = UserBookRouteImport.update({
   id: '/user/book',
   path: '/user/book',
@@ -122,6 +130,11 @@ const AdminRevenueRoute = AdminRevenueRouteImport.update({
   path: '/admin/revenue',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRequestsRoute = AdminRequestsRouteImport.update({
+  id: '/admin/requests',
+  path: '/admin/requests',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRecordsRoute = AdminRecordsRouteImport.update({
   id: '/admin/records',
   path: '/admin/records',
@@ -137,6 +150,11 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
   path: '/admin/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminComplaintsRoute = AdminComplaintsRouteImport.update({
+  id: '/admin/complaints',
+  path: '/admin/complaints',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
   id: '/admin/analytics',
   path: '/admin/analytics',
@@ -147,9 +165,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/walkin': typeof WalkinRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/complaints': typeof AdminComplaintsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/records': typeof AdminRecordsRoute
+  '/admin/requests': typeof AdminRequestsRoute
   '/admin/revenue': typeof AdminRevenueRoute
   '/admin/search': typeof AdminSearchRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -159,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/user/active': typeof UserActiveRoute
   '/user/bills': typeof UserBillsRoute
   '/user/book': typeof UserBookRoute
+  '/user/complaints': typeof UserComplaintsRoute
   '/user/dashboard': typeof UserDashboardRoute
   '/user/history': typeof UserHistoryRoute
   '/user/login': typeof UserLoginRoute
@@ -171,9 +192,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/walkin': typeof WalkinRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/complaints': typeof AdminComplaintsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/records': typeof AdminRecordsRoute
+  '/admin/requests': typeof AdminRequestsRoute
   '/admin/revenue': typeof AdminRevenueRoute
   '/admin/search': typeof AdminSearchRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -183,6 +206,7 @@ export interface FileRoutesByTo {
   '/user/active': typeof UserActiveRoute
   '/user/bills': typeof UserBillsRoute
   '/user/book': typeof UserBookRoute
+  '/user/complaints': typeof UserComplaintsRoute
   '/user/dashboard': typeof UserDashboardRoute
   '/user/history': typeof UserHistoryRoute
   '/user/login': typeof UserLoginRoute
@@ -196,9 +220,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/walkin': typeof WalkinRoute
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/complaints': typeof AdminComplaintsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/records': typeof AdminRecordsRoute
+  '/admin/requests': typeof AdminRequestsRoute
   '/admin/revenue': typeof AdminRevenueRoute
   '/admin/search': typeof AdminSearchRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -208,6 +234,7 @@ export interface FileRoutesById {
   '/user/active': typeof UserActiveRoute
   '/user/bills': typeof UserBillsRoute
   '/user/book': typeof UserBookRoute
+  '/user/complaints': typeof UserComplaintsRoute
   '/user/dashboard': typeof UserDashboardRoute
   '/user/history': typeof UserHistoryRoute
   '/user/login': typeof UserLoginRoute
@@ -222,9 +249,11 @@ export interface FileRouteTypes {
     | '/'
     | '/walkin'
     | '/admin/analytics'
+    | '/admin/complaints'
     | '/admin/dashboard'
     | '/admin/login'
     | '/admin/records'
+    | '/admin/requests'
     | '/admin/revenue'
     | '/admin/search'
     | '/admin/settings'
@@ -234,6 +263,7 @@ export interface FileRouteTypes {
     | '/user/active'
     | '/user/bills'
     | '/user/book'
+    | '/user/complaints'
     | '/user/dashboard'
     | '/user/history'
     | '/user/login'
@@ -246,9 +276,11 @@ export interface FileRouteTypes {
     | '/'
     | '/walkin'
     | '/admin/analytics'
+    | '/admin/complaints'
     | '/admin/dashboard'
     | '/admin/login'
     | '/admin/records'
+    | '/admin/requests'
     | '/admin/revenue'
     | '/admin/search'
     | '/admin/settings'
@@ -258,6 +290,7 @@ export interface FileRouteTypes {
     | '/user/active'
     | '/user/bills'
     | '/user/book'
+    | '/user/complaints'
     | '/user/dashboard'
     | '/user/history'
     | '/user/login'
@@ -270,9 +303,11 @@ export interface FileRouteTypes {
     | '/'
     | '/walkin'
     | '/admin/analytics'
+    | '/admin/complaints'
     | '/admin/dashboard'
     | '/admin/login'
     | '/admin/records'
+    | '/admin/requests'
     | '/admin/revenue'
     | '/admin/search'
     | '/admin/settings'
@@ -282,6 +317,7 @@ export interface FileRouteTypes {
     | '/user/active'
     | '/user/bills'
     | '/user/book'
+    | '/user/complaints'
     | '/user/dashboard'
     | '/user/history'
     | '/user/login'
@@ -295,9 +331,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   WalkinRoute: typeof WalkinRoute
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminComplaintsRoute: typeof AdminComplaintsRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminRecordsRoute: typeof AdminRecordsRoute
+  AdminRequestsRoute: typeof AdminRequestsRoute
   AdminRevenueRoute: typeof AdminRevenueRoute
   AdminSearchRoute: typeof AdminSearchRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
@@ -307,6 +345,7 @@ export interface RootRouteChildren {
   UserActiveRoute: typeof UserActiveRoute
   UserBillsRoute: typeof UserBillsRoute
   UserBookRoute: typeof UserBookRoute
+  UserComplaintsRoute: typeof UserComplaintsRoute
   UserDashboardRoute: typeof UserDashboardRoute
   UserHistoryRoute: typeof UserHistoryRoute
   UserLoginRoute: typeof UserLoginRoute
@@ -381,6 +420,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UserDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/user/complaints': {
+      id: '/user/complaints'
+      path: '/user/complaints'
+      fullPath: '/user/complaints'
+      preLoaderRoute: typeof UserComplaintsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/user/book': {
       id: '/user/book'
       path: '/user/book'
@@ -444,6 +490,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRevenueRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/requests': {
+      id: '/admin/requests'
+      path: '/admin/requests'
+      fullPath: '/admin/requests'
+      preLoaderRoute: typeof AdminRequestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/records': {
       id: '/admin/records'
       path: '/admin/records'
@@ -465,6 +518,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/complaints': {
+      id: '/admin/complaints'
+      path: '/admin/complaints'
+      fullPath: '/admin/complaints'
+      preLoaderRoute: typeof AdminComplaintsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/analytics': {
       id: '/admin/analytics'
       path: '/admin/analytics'
@@ -479,9 +539,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   WalkinRoute: WalkinRoute,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminComplaintsRoute: AdminComplaintsRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminRecordsRoute: AdminRecordsRoute,
+  AdminRequestsRoute: AdminRequestsRoute,
   AdminRevenueRoute: AdminRevenueRoute,
   AdminSearchRoute: AdminSearchRoute,
   AdminSettingsRoute: AdminSettingsRoute,
@@ -491,6 +553,7 @@ const rootRouteChildren: RootRouteChildren = {
   UserActiveRoute: UserActiveRoute,
   UserBillsRoute: UserBillsRoute,
   UserBookRoute: UserBookRoute,
+  UserComplaintsRoute: UserComplaintsRoute,
   UserDashboardRoute: UserDashboardRoute,
   UserHistoryRoute: UserHistoryRoute,
   UserLoginRoute: UserLoginRoute,

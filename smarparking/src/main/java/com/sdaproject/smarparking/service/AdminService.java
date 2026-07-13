@@ -1,22 +1,30 @@
 package com.sdaproject.smarparking.service;
 
-import com.sdaproject.smarparking.models.ParkingSite;
 import com.sdaproject.smarparking.models.ParkingRecord;
+import com.sdaproject.smarparking.models.ParkingSite;
 import com.sdaproject.smarparking.models.user;
 import com.sdaproject.smarparking.models.builder.ParkingSiteBuilder;
 import com.sdaproject.smarparking.repository.ParkingSiteRepository;
 import com.sdaproject.smarparking.repository.ParkingRecordRepository;
 import com.sdaproject.smarparking.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@Service // <-- This annotation inherently makes this class a Singleton!
+@Service 
 public class AdminService {
 
     @Autowired
@@ -28,18 +36,12 @@ public class AdminService {
     @Autowired
     private ParkingRecordRepository recordRepository;
 
-
-
-    @Autowired
-    private ReportService reportService;
-
     // Admin Feature 1: Add a new site using the BUILDER PATTERN
     public String addNewSite(String siteId, int capacity, String location, double rate) {
         if (siteRepository.existsById(siteId)) {
             return "Error: Site ID already exists!";
         }
 
-        // Using the Builder Pattern to cleanly construct the object
         ParkingSite newSite = new ParkingSiteBuilder()
                 .setSiteId(siteId)
                 .setMaxSiteCapacity(capacity)
@@ -49,6 +51,8 @@ public class AdminService {
                 .build();
 
         siteRepository.save(newSite);
+        // Clear the overview cache when a new site is added
+        clearAdminCache();
         return "Success: New parking site added at " + location;
     }
 
@@ -63,6 +67,8 @@ public class AdminService {
             return "Error: Site not found";
         }
         siteRepository.deleteById(siteId);
+        // Clear the overview cache when a site is deleted
+        clearAdminCache();
         return "Success: Site deleted";
     }
 
@@ -76,12 +82,14 @@ public class AdminService {
         s.setHourlyRate(rate);
         if (operational != null) s.setOperational(operational);
         siteRepository.save(s);
+        // Clear the overview cache when a site is updated
+        clearAdminCache();
         return "Success: Site updated";
     }
 
     // Admin Feature 3: Search vehicle by License Plate
     public Optional<user> searchVehicle(String vehicleNo) {
-        return userRepository.findByVehicleNo(vehicleNo);
+        return userRepository.findFirstByVehicleNoOrderByIdDesc(vehicleNo);
     }
 
     // Admin Feature: Get all registered users
@@ -89,33 +97,69 @@ public class AdminService {
         return userRepository.findAll();
     }
 
-    // New: Build an overview summary used by the admin dashboard
+    // LIGHTNING FAST OVERVIEW METHOD with caching
+    @Cacheable(value = "adminOverview", unless = "#result == null")
     public Map<String, Object> getOverview() {
-        List<ParkingSite> all = siteRepository.findAll();
-        long totalSites = all.size();
-        long activeSites = all.stream().filter(ParkingSite::isOperational).count();
+        long totalSites = siteRepository.count();
+        long activeSites = siteRepository.countByIsOperational(true);
         long registeredUsers = userRepository.count();
         long activeSessions = recordRepository.countByParkOutTimeIsNull();
-        Map<String, Object> revenueReport = reportService.getRevenueReport();
-        @SuppressWarnings("unchecked")
-        Map<String, Object> summary = (Map<String, Object>) revenueReport.getOrDefault("summary", Map.of());
-        double totalRevenue = Double.parseDouble(String.valueOf(summary.getOrDefault("totalRevenue", 0.0)));
 
-        double todayRevenue = recordRepository.findAll().stream()
-                .filter(ParkingRecord::isPaid)
-                .filter(r -> r.getParkOutTime() != null)
-                .filter(r -> r.getParkOutTime().toLocalDate().equals(LocalDate.now()))
-                .filter(r -> r.getAmount() != null && r.getAmount() > 0)
-                .mapToDouble(r -> r.getAmount() == null ? 0.0 : r.getAmount())
-                .sum();
+        Double dbTotalRev = recordRepository.calculateTotalRevenue();
+        double totalRevenue = (dbTotalRev != null) ? dbTotalRev : 0.0;
+
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
+        Double dbTodayRev = recordRepository.calculateRevenueBetween(startOfDay, endOfDay);
+        double todayRevenue = (dbTodayRev != null) ? dbTodayRev : 0.0;
 
         Map<String, Object> out = new HashMap<>();
         out.put("totalSites", totalSites);
         out.put("activeSites", activeSites);
         out.put("registeredUsers", registeredUsers);
         out.put("activeSessions", activeSessions);
-        out.put("totalRevenue", totalRevenue);
-        out.put("todayRevenue", todayRevenue);
+        out.put("totalRevenue", Math.round(totalRevenue * 100.0) / 100.0);
+        out.put("todayRevenue", Math.round(todayRevenue * 100.0) / 100.0);
         return out;
+    }
+
+    // Clear admin cache every 2 minutes automatically
+    @CacheEvict(allEntries = true, cacheNames = "adminOverview")
+    @Scheduled(fixedRate = 120000)
+    public void clearAdminCache() {
+        // Cache will be refreshed on next request
+    }
+
+    public Map<String, Object> getPaginatedRecords(int page, int size, String search, String siteId, String status) {
+        
+        // Let Spring Boot handle OFFSET/LIMIT; ordering is fixed in repository query.
+        PageRequest pageRequest = PageRequest.of(page, size);
+        
+        // 1. Grab exactly the slice of records needed using the DB query
+        Page<ParkingRecord> recordPage = recordRepository.findPaginatedAndFiltered(search, siteId, status, pageRequest);
+
+        // 2. Map cleanly to prevent Hibernate N+1 loops on relations
+        List<Map<String, Object>> mappedRecords = new ArrayList<>();
+        for (ParkingRecord r : recordPage.getContent()) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", r.getId());
+            map.put("plate", r.getLicensePlate());
+            map.put("location", r.getParkingSite() != null ? r.getParkingSite().getSiteId() : "Unknown"); 
+            map.put("slot", r.getSlotNumber());
+            map.put("checkIn", r.getParkInTime() != null ? r.getParkInTime().toString() : "");
+            map.put("checkOut", r.getParkOutTime() != null ? r.getParkOutTime().toString() : "");
+            map.put("amount", r.getAmount());
+            map.put("status", r.isPaid() ? "Paid" : "Unpaid");
+            mappedRecords.add(map);
+        }
+
+        // 3. Package for the frontend
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", mappedRecords);
+        response.put("totalPages", recordPage.getTotalPages());
+        response.put("totalElements", recordPage.getTotalElements());
+        response.put("page", recordPage.getNumber());
+        response.put("size", recordPage.getSize());
+        return response;
     }
 }

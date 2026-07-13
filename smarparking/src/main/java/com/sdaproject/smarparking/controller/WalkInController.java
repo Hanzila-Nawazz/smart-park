@@ -56,10 +56,13 @@ public class WalkInController {
             return ResponseEntity.badRequest().body(Map.of("error", "Invalid site selected"));
         }
 
-        Optional<user> existing = userRepository.findByVehicleNo(plate);
+        boolean isRegisteredUser = false;
+        Optional<user> existing = userRepository.findFirstByVehicleNoOrderByIdDesc(plate);
         if (existing.isEmpty()) {
             user walkin = userFactory.createUser(name, contact, vehicleType, plate, null, null);
             userRepository.save(walkin);
+        } else if (existing.get() instanceof com.sdaproject.smarparking.models.RegularUser) {
+            isRegisteredUser = true;
         }
 
         List<Map<String, Object>> slots = parkingFacade.getSiteSlots(siteId);
@@ -77,6 +80,10 @@ public class WalkInController {
         String result = parkingFacade.parkVehicle(plate, siteId, slotNumber);
         if (result.startsWith("Error")) {
             return ResponseEntity.badRequest().body(Map.of("error", result));
+        }
+
+        if (isRegisteredUser) {
+            result = "License plate is already registered. Session recorded to their account. " + result;
         }
 
         Map<String, Object> response = new HashMap<>();
@@ -109,6 +116,7 @@ public class WalkInController {
         response.put("checkOut", LocalDateTime.now());
         response.put("duration", minutes + " min");
         response.put("total", total);
+        response.put("isRegularUser", record.getUser() instanceof com.sdaproject.smarparking.models.RegularUser);
         return ResponseEntity.ok(response);
     }
 
@@ -139,5 +147,12 @@ public class WalkInController {
         response.put("checkOut", record.getParkOutTime());
         response.put("total", record.getAmount() != null ? record.getAmount() : 0.0);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/is-registered/{plate}")
+    public ResponseEntity<?> isRegistered(@PathVariable String plate) {
+        Optional<user> existing = userRepository.findFirstByVehicleNoOrderByIdDesc(plate);
+        boolean isReg = existing.isPresent() && (existing.get() instanceof com.sdaproject.smarparking.models.RegularUser);
+        return ResponseEntity.ok(Map.of("isRegistered", isReg));
     }
 }

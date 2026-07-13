@@ -34,7 +34,15 @@ export const useAuthStore = create<AuthState>()(
       setWalletBalance: (n: number) => set(() => ({ walletBalance: n })),
       setUser: (u: Partial<AuthUser>) => set((s) => ({ user: { ...(s.user || {}), ...u } as AuthUser })),
       setAuth: (user, token) => set({ user, token }),
-      logout: () => set({ user: null, token: null }),
+      logout: () => {
+        // Clear all auth data
+        set({ user: null, token: null, walletBalance: 1500 });
+        // Clear localStorage completely to prevent stale token issues
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("spms-auth");
+          sessionStorage.clear();
+        }
+      },
       topUp: (amount) => set((s) => ({ walletBalance: s.walletBalance + amount })),
       deduct: (amount) => set((s) => ({ walletBalance: Math.max(0, s.walletBalance - amount) })),
     }),
