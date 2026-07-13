@@ -9,6 +9,12 @@ import { Badge } from "@/components/ui/badge";
 import { adminService } from "@/services/adminService";
 
 export const Route = createFileRoute("/admin/search")({
+  head: () => ({
+    meta: [
+      { title: "Admin Page - Search" },
+      { name: "description", content: "Secure administration portal for managing parking sites, monitoring revenue, and analyzing real-time occupancy data." },
+    ],
+  }),
   component: () => <DashboardLayout role="admin"><VehicleSearch /></DashboardLayout>,
 });
 

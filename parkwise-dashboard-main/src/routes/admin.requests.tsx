@@ -9,6 +9,12 @@ import { CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/requests")({
+  head: () => ({
+    meta: [
+      { title: "Admin Page - Requests" },
+      { name: "description", content: "Secure administration portal for managing parking sites, monitoring revenue, and analyzing real-time occupancy data." },
+    ],
+  }),
   component: () => <DashboardLayout role="admin"><AdminRequests /></DashboardLayout>,
 });
 

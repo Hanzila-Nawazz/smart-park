@@ -14,6 +14,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/user/settings")({
+  head: () => ({
+    meta: [
+      { title: "Settings - Smart Park" },
+      { name: "description", content: "Manage your Smart Park account, book parking slots, view active sessions, and top up your wallet securely." },
+    ],
+  }),
   component: () => <DashboardLayout role="user"><Settings /></DashboardLayout>,
 });
 

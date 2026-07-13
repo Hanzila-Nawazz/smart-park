@@ -9,6 +9,12 @@ import { PageHeader } from "@/components/Shared";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/admin/revenue")({
+  head: () => ({
+    meta: [
+      { title: "Admin Page - Revenue" },
+      { name: "description", content: "Secure administration portal for managing parking sites, monitoring revenue, and analyzing real-time occupancy data." },
+    ],
+  }),
   component: () => <DashboardLayout role="admin"><Revenue /></DashboardLayout>,
 });
 

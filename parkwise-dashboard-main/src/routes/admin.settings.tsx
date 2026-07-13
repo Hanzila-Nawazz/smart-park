@@ -12,6 +12,12 @@ import { adminService } from "@/services/adminService";
 import { PasswordValidator } from "@/components/PasswordValidator";
 
 export const Route = createFileRoute("/admin/settings")({
+  head: () => ({
+    meta: [
+      { title: "Admin Page - Settings" },
+      { name: "description", content: "Secure administration portal for managing parking sites, monitoring revenue, and analyzing real-time occupancy data." },
+    ],
+  }),
   component: () => <DashboardLayout role="admin"><AdminSettings /></DashboardLayout>,
 });
 

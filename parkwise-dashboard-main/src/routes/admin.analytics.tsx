@@ -6,6 +6,12 @@ import { reportService } from "@/services/reportService";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/admin/analytics")({
+  head: () => ({
+    meta: [
+      { title: "Admin Page - Analytics" },
+      { name: "description", content: "Secure administration portal for managing parking sites, monitoring revenue, and analyzing real-time occupancy data." },
+    ],
+  }),
   component: () => <DashboardLayout role="admin"><Analytics /></DashboardLayout>,
 });
 

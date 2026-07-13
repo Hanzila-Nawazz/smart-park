@@ -48,10 +48,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "SmartPark — Smart Parking Management System" },
-      { name: "description", content: "Efficient, secure and smart parking management for sites, users, and walk-ins." },
+      { title: "Smart Park - Your Seemless Parking Assistant" },
+      { name: "description", content: "Experience seamless parking with Smart Park. Effortlessly book, manage, and find parking slots instantly." },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/x-icon", href: "/favicon.ico" }
+    ]
   }),
   shellComponent: RootShell,
   component: RootComponent,

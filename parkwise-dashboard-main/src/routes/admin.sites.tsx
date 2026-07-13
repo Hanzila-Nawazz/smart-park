@@ -15,6 +15,12 @@ import { adminService } from "@/services/adminService";
 import { useEffect } from "react";
 
 export const Route = createFileRoute("/admin/sites")({
+  head: () => ({
+    meta: [
+      { title: "Admin Page - Sites" },
+      { name: "description", content: "Secure administration portal for managing parking sites, monitoring revenue, and analyzing real-time occupancy data." },
+    ],
+  }),
   component: () => <DashboardLayout role="admin"><ManageSites /></DashboardLayout>,
 });
 

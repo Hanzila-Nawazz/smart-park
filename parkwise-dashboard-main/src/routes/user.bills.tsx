@@ -10,6 +10,12 @@ import { parkingService } from "@/services/parkingService";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/user/bills")({
+  head: () => ({
+    meta: [
+      { title: "Bills - Smart Park" },
+      { name: "description", content: "Manage your Smart Park account, book parking slots, view active sessions, and top up your wallet securely." },
+    ],
+  }),
   component: () => <DashboardLayout role="user"><Bills /></DashboardLayout>,
 });
 

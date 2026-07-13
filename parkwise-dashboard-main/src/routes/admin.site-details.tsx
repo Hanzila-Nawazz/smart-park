@@ -12,6 +12,12 @@ import { parkingService } from "@/services/parkingService";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/site-details")({
+  head: () => ({
+    meta: [
+      { title: "Admin Page - Site Details" },
+      { name: "description", content: "Secure administration portal for managing parking sites, monitoring revenue, and analyzing real-time occupancy data." },
+    ],
+  }),
   component: () => <DashboardLayout role="admin"><SiteDetails /></DashboardLayout>,
 });
 

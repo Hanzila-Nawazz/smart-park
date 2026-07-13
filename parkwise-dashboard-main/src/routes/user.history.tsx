@@ -10,6 +10,12 @@ import { useAuthStore } from "@/lib/store";
 import { parkingService } from "@/services/parkingService";
 
 export const Route = createFileRoute("/user/history")({
+  head: () => ({
+    meta: [
+      { title: "History - Smart Park" },
+      { name: "description", content: "Manage your Smart Park account, book parking slots, view active sessions, and top up your wallet securely." },
+    ],
+  }),
   component: () => <DashboardLayout role="user"><History /></DashboardLayout>,
 });
 

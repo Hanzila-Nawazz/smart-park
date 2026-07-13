@@ -12,6 +12,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/admin/complaints")({
+  head: () => ({
+    meta: [
+      { title: "Admin Page - Complaints" },
+      { name: "description", content: "Secure administration portal for managing parking sites, monitoring revenue, and analyzing real-time occupancy data." },
+    ],
+  }),
   component: () => <DashboardLayout role="admin"><AdminComplaints /></DashboardLayout>,
 });
 

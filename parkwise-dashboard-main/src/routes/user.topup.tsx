@@ -13,6 +13,12 @@ import { paymentService } from "@/services/paymentService";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/user/topup")({
+  head: () => ({
+    meta: [
+      { title: "Topup - Smart Park" },
+      { name: "description", content: "Manage your Smart Park account, book parking slots, view active sessions, and top up your wallet securely." },
+    ],
+  }),
   component: () => <DashboardLayout role="user"><TopUp /></DashboardLayout>,
 });
 

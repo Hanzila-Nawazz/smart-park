@@ -10,6 +10,12 @@ import { adminService } from "../services/adminService";
 import { reportService } from "../services/reportService";
 
 export const Route = createFileRoute("/admin/dashboard")({
+  head: () => ({
+    meta: [
+      { title: "Admin Page - Dashboard" },
+      { name: "description", content: "Secure administration portal for managing parking sites, monitoring revenue, and analyzing real-time occupancy data." },
+    ],
+  }),
   component: () => <DashboardLayout role="admin"><AdminDashboard /></DashboardLayout>,
 });
 

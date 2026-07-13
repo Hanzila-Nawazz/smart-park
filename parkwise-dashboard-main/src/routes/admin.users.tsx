@@ -9,6 +9,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { adminService } from "@/services/adminService";
 
 export const Route = createFileRoute("/admin/users")({
+  head: () => ({
+    meta: [
+      { title: "Admin Page - Users" },
+      { name: "description", content: "Secure administration portal for managing parking sites, monitoring revenue, and analyzing real-time occupancy data." },
+    ],
+  }),
   component: () => <DashboardLayout role="admin"><RegisteredUsers /></DashboardLayout>,
 });
 

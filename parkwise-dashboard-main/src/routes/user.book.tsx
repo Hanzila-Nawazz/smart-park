@@ -15,6 +15,12 @@ import { userService } from "@/services/userService";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/user/book")({
+  head: () => ({
+    meta: [
+      { title: "Book - Smart Park" },
+      { name: "description", content: "Manage your Smart Park account, book parking slots, view active sessions, and top up your wallet securely." },
+    ],
+  }),
   component: () => <DashboardLayout role="user"><BookSlot /></DashboardLayout>,
 });
 

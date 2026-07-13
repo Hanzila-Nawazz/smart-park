@@ -11,6 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/user/complaints")({
+  head: () => ({
+    meta: [
+      { title: "Complaints - Smart Park" },
+      { name: "description", content: "Manage your Smart Park account, book parking slots, view active sessions, and top up your wallet securely." },
+    ],
+  }),
   component: () => <DashboardLayout role="user"><UserComplaints /></DashboardLayout>,
 });
 
